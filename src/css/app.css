@@ -1,0 +1,31 @@
+.form-text {
+  display: flex;
+}
+
+.label {
+  flex: 0 0 150px; /* Fixed width for labels */
+  text-align: left;
+}
+
+.value {
+  flex: 1;
+  /* text-align: left; */
+  /* font-family: 'Courier New', Courier, monospace; /\* Use monospaced font *\/ */
+  display: flex;
+  align-items: center;
+}
+
+.value span {
+  display: inline-block;
+  margin-right: 0.2em;
+  min-width: 100px; /* Set minimum width to accommodate sign */
+  text-align: right; /* Align numbers properly */
+}
+
+.btn-primary:disabled,
+.btn-primary[disabled] {
+  background-color: #b8d4f1 !important;
+  border-color: #b8d4f1 !important;
+  color: #ffffff !important;
+  opacity: 0.7;
+}

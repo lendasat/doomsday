@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lendasat Doomsday Software</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <link href="css/app.css" rel="stylesheet" />
+    <style>
+      .wizard-section {
+        display: none;
+      }
+      .wizard-section.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <svg style="display: none">
+      <defs>
+        <symbol id="icon-info-circle" viewBox="0 0 16 16" fill="currentColor">
+          <path
+            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"
+          />
+        </symbol>
+      </defs>
+    </svg>
+    <div class="container p-3">
+      <div class="flex-grow-1 d-flex justify-content-center">
+        <form>
+          <select
+            id="networkInput"
+            class="form-select form-select-sm"
+            style="width: 150px"
+          >
+            <option value="mainnet" selected>Mainnet</option>
+            <option value="signet">Mutinynet</option>
+          </select>
+        </form>
+      </div>
+      <form id="wizard-form">
+        <div id="section1" class="wizard-section active">
+          <h2 class="mb-3">① Private key</h2>
+          <form>
+            <h4 class="mb-3">Enter data needed to derive your private key</h4>
+            <div class="mb-3">
+              <label for="encryptedSeedInput" class="form-label">
+                Encrypted seed
+              </label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="This is the encrypted mnemonic seed phrase of your Lendasat wallet. You can find it in the browser's local storage or in your contract backup, under `wallet-v2.<wallet-id>.seed`."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="encryptedSeedInput"
+                rows="4"
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="passwordInput" class="form-label">Password</label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The password you use to log in to Lendasat."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input class="form-control" id="passwordInput" type="password" />
+              <div class="form-check mt-1">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="showPasswordCheckbox"
+                />
+                <label class="form-check-label" for="showPasswordCheckbox"
+                  >Show value</label
+                >
+              </div>
+              <div class="invalid-feedback">
+                Seed could not be decrypted with that password
+              </div>
+              <div class="valid-feedback">
+                Seed was decrypted using this password
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="decryptedSeedInput" class="form-label"
+                >Mnemonic seed phrase</label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The mnemonic seed phrase used to derive the Xpriv of your Lendasat wallet. It can either be derived from your encrypted seed and password, or you can provide it directly if you backed it up."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="decryptedSeedInput"
+                rows="3"
+              ></textarea>
+              <div class="invalid-feedback">
+                Doesn't look like valid seed (i.e. long enough hex sequence)
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="contractSecretInput" class="form-label"
+                >Contract secret
+                <small class="text-muted">Pre-PAKE contracts only</small></label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="This only applies to contracts created before 2025-01-19. Most likely you want this unchecked, even if a value appears in the input field below, after decrypting your seed."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input class="form-control" id="contractSecretInput" />
+              <div class="form-check mt-1">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="useContractSecretCheckbox"
+                />
+                <label class="form-check-label" for="useContractSecretCheckbox">
+                  Use contract secret
+                </label>
+              </div>
+            </div>
+            <h4 class="mb-3">Nostr (optional)</h4>
+            <div class="mb-3">
+              <div class="mb-3">
+                <label for="nsecDerivationPathInput" class="form-label"
+                  >Nsec derivation path</label
+                >
+                <i
+                  class="bi bi-info-circle-fill"
+                  data-toggle="tooltip"
+                  title="The BIP32 derivation path that was used to derive your Nsec for the contract."
+                >
+                  <svg width="12" height="12">
+                    <use xlink:href="#icon-info-circle"></use>
+                  </svg>
+                </i>
+                <input
+                  type="string"
+                  min="0"
+                  class="form-control"
+                  placeholder="m/44/0/0/0/0"
+                  id="nsecDerivationPathInput"
+                />
+                <div class="invalid-feedback">
+                  Doesn't look like a valid path
+                </div>
+              </div>
+              <label for="nsecInput" class="form-label">Nsec</label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="If derived correctly, this is the Nsec that you can use to exchange messages with your counterparty via Nostr. You can import this into a Nostr client, and send messages to their Npub (found under `counterpartyNpub`, in your contract backup)."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input class="form-control" id="nsecInput" disabled />
+            </div>
+            <h4 class="mb-3">Derived key pair</h4>
+            <div class="mb-3">
+              <div class="mb-3">
+                <label for="derivationPathInput" class="form-label"
+                  >Derivation path</label
+                >
+                <i
+                  class="bi bi-info-circle-fill"
+                  data-toggle="tooltip"
+                  title="The BIP32 derivation path that was used to derive a public key from your seed for the collateral multisig contract. This is usually 586/0/i, where i is any number (starting at 0). For most contracts, you will be able to find it in your contract backup, under `contract.derivation_path`. For some older contracts, you will need to input a hardened derivation of the form 586'/1'/i' or 586'/0'/i', with 586'/1'/0' or 586'/0'/0' being the most likely values."
+                >
+                  <svg width="12" height="12">
+                    <use xlink:href="#icon-info-circle"></use>
+                  </svg>
+                </i>
+                <input
+                  type="string"
+                  min="0"
+                  class="form-control"
+                  placeholder="586/0/0"
+                  id="derivationPathInput"
+                />
+                <div class="invalid-feedback">
+                  Doesn't look like a valid path
+                </div>
+              </div>
+              <label for="privateKeyInput" class="form-label"
+                ><b>Private key</b></label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="If derived correctly, this is the private key that you can use to sign a transaction spending the collateral output."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input class="form-control" id="privateKeyInput" />
+            </div>
+            <div class="mb-3">
+              <label for="publicKeyInput" class="form-label">Public key</label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The public key corresponding to the private key above. If you were a borrower in the contract, you can compare this against the value of `contract.borrower_pk` in your contract backup, to verify if the key pair derivation was successful."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input readonly class="form-control" id="publicKeyInput" />
+            </div>
+          </form>
+        </div>
+
+        <div id="section2" class="wizard-section">
+          <h2 class="mb-3">② Collateral contract</h2>
+          <form>
+            <h4 class="mb-3">
+              Find your contract on the blockchain and provide its script
+            </h4>
+            <div class="mb-3">
+              <label for="collateralAddressInput" class="form-label"
+                >Address <small class="text-muted">P2WPKH</small></label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The address of the Bitcoin collateral contract. You can find this in your contract backup, under `contract.contract_address`."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input
+                class="addressInput form-control"
+                id="collateralAddressInput"
+              />
+              <div class="invalid-feedback">
+                Doesn't look like a BTC address of the selected network
+              </div>
+              <div class="valid-feedback">
+                Valid
+                <span id="collateralAddressNetwork" class="addressNetwork"
+                  >???</span
+                >
+                address
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="utxosInput" class="form-label"
+                >UTXOs (JSON)
+                <span
+                  class="spinner-border spinner-border-sm d-none"
+                  id="utxoSpinner"
+                ></span
+              ></label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="All the collateral UTXOs found for your contract. We fetch them from an Esplora server, using the address provided above."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="utxosInput"
+                rows="5"
+                disabled
+              ></textarea>
+              <div class="invalid-feedback">Parse and/or network error</div>
+              <div class="valid-feedback">
+                Total unspent: <span id="utxosTotalUnspent">???</span> ₿
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="witnessScriptInput" class="form-label"
+                >Witness script
+                <small class="text-muted">2-of-3 multisig</small></label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The 2-of-3 multisig collateral script. You can find this in your contract backup, under `contract.collateral_script`. We will verify if this script matches the collateral address provided above."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="witnessScriptInput"
+                rows="5"
+              ></textarea>
+              <div class="invalid-feedback">
+                Doesn't correspond to collateral address or wrong script
+                template
+              </div>
+              <div class="valid-feedback">
+                Witness script matches collateral contract address
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div id="section3" class="wizard-section">
+          <h2 class="mb-3">③ Transaction outputs</h2>
+          <form>
+            <h4 class="mb-3">Choose where to send the collateral</h4>
+            <div class="mb-3">
+              <label for="outputAddress1Input" class="form-label"
+                >Borrower address</label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="Where the borrower will receive their sats."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input
+                class="addressInput form-control"
+                id="outputAddress1Input"
+              />
+              <div class="invalid-feedback">
+                Doesn't look like BTC address of selected network
+              </div>
+              <div class="valid-feedback">
+                Valid
+                <span id="outputAddress1Network" class="addressNetwork"
+                  >???</span
+                >
+                address
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="outputValue1Input" class="form-label"
+                >Borrower amount</label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="How many sats the borrower gets out of the contract."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input
+                type="number"
+                min="1"
+                class="form-control"
+                id="outputValue1Input"
+              />
+              <div class="form-text">Satoshi amount for borrower</div>
+              <div class="invalid-feedback">
+                Doesn't look like a positive number
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="outputAddress2Input" class="form-label"
+                >Lender address</label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="Where the lender will receive their sats."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input
+                class="addressInput form-control"
+                id="outputAddress2Input"
+              />
+              <div class="invalid-feedback">
+                Doesn't look like BTC address of selected network
+              </div>
+              <div class="valid-feedback">
+                Valid
+                <span id="outputAddress2Network" class="addressNetwork"
+                  >???</span
+                >
+                address
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="outputValue2Input" class="form-label"
+                >Lender amount</label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="How many sats the lender gets out of the contract."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <input
+                type="number"
+                min="1"
+                class="form-control"
+                id="outputValue2Input"
+              />
+              <div class="form-text">Satoshi amount for lender</div>
+              <div class="invalid-feedback">
+                Doesn't look like a positive number
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-text d-flex">
+                <span class="label">Inputs total:</span>
+                <span class="value">
+                  <span id="inputsTotal">??? </span> ₿
+                </span>
+              </div>
+              <div class="form-text d-flex">
+                <span class="label">Outputs total:</span>
+                <span class="value">
+                  <span id="goesToOutputs">??? </span> ₿
+                </span>
+              </div>
+              <div class="form-text d-flex">
+                <span class="label">Network fee:</span>
+                <span class="value"> <span id="networkFee">??? </span> ₿ </span>
+              </div>
+              <div class="form-text d-flex">
+                <span class="label">Recommended fee:</span>
+                <span class="value">
+                  <span id="recommendedFee">???</span> ₿
+                </span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div id="section4" class="wizard-section">
+          <h2 class="mb-3">④ Sign &amp; share</h2>
+          <form>
+            <div class="mb-3">
+              <label for="skeletonTxInput" class="form-label">
+                Unsigned PSBT
+                <small class="text-muted"
+                  >Built from found inputs and chosen outputs</small
+                >
+              </label>
+              <textarea
+                class="form-control"
+                id="skeletonTxInput"
+                rows="5"
+                disabled
+              ></textarea>
+              <div class="invalid-feedback">Cannot build PSBT</div>
+            </div>
+            <div class="mb-3">
+              <label for="psbtInput" class="form-label">
+                PSBT with your signature
+              </label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="If built and signed correctly, you can share it with your counterparty so that they can add their signature and broadcast it. You should verify that the outputs are correct before sharing."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="psbtInput"
+                rows="5"
+                disabled
+              ></textarea>
+              <div class="invalid-feedback">
+                Failed to sign PSBT. Incorrect private key for contract
+              </div>
+              <div class="valid-feedback">
+                PSBT signed! Share this with your counterparty
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- The party receiving the PSBT goes directly to this page after deriving the private key -->
+        <div id="sectionSignBroadcast" class="wizard-section">
+          <h2 class="mb-3">② Sign &amp; broadcast</h2>
+          <form>
+            <div class="mb-3">
+              <label for="counterpartyPsbtInput" class="form-label">
+                Counterparty PSBT
+                <small class="text-muted"
+                  >The PSBT your counterparty shared with you</small
+                >
+              </label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The PSBT your counterparty shared with you."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="counterpartyPsbtInput"
+                rows="5"
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="signedPsbtInput" class="form-label">
+                Signed PSBT
+                <small class="text-muted"
+                  >Uses counterparty PSBT and your private key</small
+                >
+              </label>
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The PSBT after adding your signature."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="signedPsbtInput"
+                rows="5"
+                disabled
+              ></textarea>
+              <div class="invalid-feedback">
+                Wrong counterparty PSBT, or signing error
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="signedTxInput" class="form-label"
+                >Signed TX
+                <small class="text-muted"
+                  >Requires both signatures</small
+                ></label
+              >
+              <i
+                class="bi bi-info-circle-fill"
+                data-toggle="tooltip"
+                title="The signed transaction, ready to be broadcast. You MUST verify the transaction details before broadcasting. In particular, make sure that you get the expected amount."
+              >
+                <svg width="12" height="12">
+                  <use xlink:href="#icon-info-circle"></use>
+                </svg>
+              </i>
+              <textarea
+                class="form-control"
+                id="signedTxInput"
+                rows="5"
+                disabled
+              ></textarea>
+              <div class="invalid-feedback">
+                Signed PSBT doesn't seem to be fully signed or otherwise correct
+              </div>
+            </div>
+            <div class="mb-3 text-center">
+              <button
+                class="btn btn-primary bg-blue-500 text-white py-2 px-4 rounded disabled:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                id="broadcastButton"
+                disabled
+              >
+                Broadcast
+                <span
+                  class="spinner-border spinner-border-sm d-none"
+                  id="broadcastSpinner"
+                ></span>
+              </button>
+              <div class="invalid-feedback mt-2 mx-auto text-center">
+                Transaction broadcast failed
+              </div>
+              <div class="valid-feedback mt-2 mx-auto text-center">
+                Transaction broadcast, TXID: <a target="_blank">???</a>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- These buttons only appear on the first page -->
+        <div class="d-flex justify-content-center align-items-center gap-4">
+          <button type="button" id="goToSignShareBtn" class="btn btn-primary">
+            Build transaction
+          </button>
+          <button
+            type="button"
+            id="goToSignBroadcastBtn"
+            class="btn btn-primary"
+          >
+            Sign &amp; broadcast
+          </button>
+        </div>
+
+        <!-- These buttons only appear on the middle pages -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <button type="button" id="prevBtn" class="btn btn-secondary mx-2">
+            Back
+          </button>
+          <button type="button" id="nextBtn" class="btn btn-primary mx-2">
+            Next
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
+
+    <script type="module">
+      import {
+        broadcast,
+        buildSkeletonTx,
+        buildPsbt,
+        buildTx,
+        deriveNsec,
+        derivePrivateKey,
+        decryptSeed,
+        recommendedFee,
+        txLink,
+        unspents,
+        validateAddressInput,
+        validateNumericInput,
+        validateWitnessScript,
+      } from "./js/app";
+      import {
+        debounce,
+        markInvalid,
+        markValid,
+        networkFromAddress,
+      } from "./js/utils";
+
+      let currentStep = 0;
+      const steps = document.querySelectorAll(".wizard-section");
+      const nextBtn = document.getElementById("nextBtn");
+      const prevBtn = document.getElementById("prevBtn");
+      const goToSignShareBtn = document.getElementById("goToSignShareBtn");
+      const goToSignBroadcastBtn = document.getElementById(
+        "goToSignBroadcastBtn",
+      );
+
+      const showStep = (step) => {
+        steps.forEach((section, index) => {
+          section.classList.toggle("active", index === step);
+        });
+
+        /* Do not display prevBtn on first page */
+        prevBtn.style.display = step === 0 ? "none" : "inline";
+
+        /* Do not display nextBtn on the first page, or on either of the final pages */
+        if (
+          step === 0 ||
+          step === steps.length - 1 ||
+          step === steps.length - 2
+        ) {
+          nextBtn.style.display = "none";
+        } else {
+          nextBtn.style.display = "inline-block";
+        }
+
+        /* Only display these on the first page */
+        if (step === 0) {
+          goToSignShareBtn.style.display = "inline-block";
+          goToSignBroadcastBtn.style.display = "inline-block";
+        } else {
+          goToSignShareBtn.style.display = "none";
+          goToSignBroadcastBtn.style.display = "none";
+        }
+
+        if (step === 0) {
+          nextBtn.textContent = "Build transaction";
+        } else {
+          nextBtn.textContent = "Next";
+        }
+      };
+
+      goToSignShareBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        currentStep++;
+        showStep(currentStep);
+      });
+
+      goToSignBroadcastBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        currentStep = steps.length - 1;
+        showStep(currentStep);
+      });
+
+      prevBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        if (currentStep == steps.length - 1) {
+          currentStep = 0;
+          showStep(currentStep);
+        } else if (currentStep > 0) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      });
+
+      nextBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      });
+
+      showStep(currentStep);
+
+      const networkInput = document.getElementById("networkInput");
+      const encryptedSeedInput = document.getElementById("encryptedSeedInput");
+      const decryptedSeedInput = document.getElementById("decryptedSeedInput");
+      const derivationPathInput = document.getElementById(
+        "derivationPathInput",
+      );
+      const passwordInput = document.getElementById("passwordInput");
+      const showPasswordCheckbox = document.getElementById(
+        "showPasswordCheckbox",
+      );
+      const privateKeyInput = document.getElementById("privateKeyInput");
+      const publicKeyInput = document.getElementById("publicKeyInput");
+      const collateralAddressInput = document.getElementById(
+        "collateralAddressInput",
+      );
+      const collateralAddressNetwork = document.getElementById(
+        "collateralAddressNetwork",
+      );
+      const utxosInput = document.getElementById("utxosInput");
+      const utxoSpinner = document.getElementById("utxoSpinner");
+      const utxosTotalUnspent = document.getElementById("utxosTotalUnspent");
+      const inputsTotal = document.getElementById("inputsTotal");
+      const witnessScriptInput = document.getElementById("witnessScriptInput");
+      const outputAddress1Input = document.getElementById(
+        "outputAddress1Input",
+      );
+      const outputValue1Input = document.getElementById("outputValue1Input");
+      const outputAddress2Input = document.getElementById(
+        "outputAddress2Input",
+      );
+      const outputValue2Input = document.getElementById("outputValue2Input");
+      const networkFeeSpan = document.getElementById("networkFee");
+      const goesToOutputsSpan = document.getElementById("goesToOutputs");
+      const recommendedFeeSpan = document.getElementById("recommendedFee");
+      const skeletonTxInput = document.getElementById("skeletonTxInput");
+      const psbtInput = document.getElementById("psbtInput");
+      const signedTxInput = document.getElementById("signedTxInput");
+      const broadcastButton = document.getElementById("broadcastButton");
+      const broadcastSpinner = document.getElementById("broadcastSpinner");
+      const contractSecretInput = document.getElementById(
+        "contractSecretInput",
+      );
+      const counterpartyPsbtInput = document.getElementById(
+        "counterpartyPsbtInput",
+      );
+      const signedPsbtInput = document.getElementById("signedPsbtInput");
+
+      const nsecDerivationPathInput = document.getElementById(
+        "nsecDerivationPathInput",
+      );
+      const nsecInput = document.getElementById("nsecInput");
+
+      const useContractSecretCheckbox = document.getElementById(
+        "useContractSecretCheckbox",
+      );
+      useContractSecretCheckbox.disabled = contractSecretInput.value == "";
+
+      let useContractSecret = useContractSecretCheckbox.checked;
+
+      let utxosValid = false;
+      let outputsValid = false;
+
+      const updateDecryptedSeed = () => {
+        decryptSeed(encryptedSeedInput.value, passwordInput.value).then(
+          (result) => {
+            if (result === null) {
+              markInvalid(passwordInput);
+              markInvalid(encryptedSeedInput);
+              decryptedSeedInput.value = "";
+            } else {
+              markValid(passwordInput);
+              markValid(encryptedSeedInput);
+              decryptedSeedInput.value = result.mnemonic;
+
+              if (result.contractSecret !== undefined) {
+                contractSecretInput.value = result.contractSecret;
+                useContractSecretCheckbox.disabled = false;
+              }
+
+              updatePrivateKey();
+            }
+          },
+        );
+      };
+
+      const updatePrivateKey = () => {
+        const contractSecret = useContractSecret
+          ? contractSecretInput.value
+          : null;
+
+        derivePrivateKey(
+          decryptedSeedInput.value,
+          contractSecret,
+          derivationPathInput.value,
+        )
+          .then((kp) => {
+            privateKeyInput.value = kp.privateKey;
+            publicKeyInput.value = kp.publicKey;
+            markValid(decryptedSeedInput);
+            markValid(derivationPathInput);
+          })
+          .catch((e) => {
+            console.error("Failed to derive private key:", e.message);
+
+            if (e.message.match(/Invalid entropy/)) {
+              markInvalid(decryptedSeedInput);
+              return;
+            } else if (e.message.match(/Expected BIP32Path/)) {
+              markInvalid(derivationPathInput);
+              return;
+            }
+            throw e;
+          })
+          .finally(() => {
+            updatePsbt();
+            updateSignedPsbt();
+          });
+      };
+
+      const updateUTXOs = () => {
+        utxosValid = false;
+
+        if (!validateAddressInput(collateralAddressInput, networkInput.value)) {
+          return;
+        }
+        const address = collateralAddressInput.value;
+
+        utxoSpinner.classList.remove("d-none");
+        utxosInput.disabled = true;
+
+        unspents(address)
+          .then((json) => {
+            utxosInput.value = JSON.stringify(json, null, 2);
+            updateTotalUnspent();
+          })
+          .then(() => recommendedFee(networkFromAddress(address)))
+          .then(
+            (fee) =>
+              (recommendedFeeSpan.innerText = (fee / 10 ** 8).toFixed(8)),
+          )
+          .catch((error) => {
+            markInvalid(utxosInput);
+            throw error;
+          })
+          .finally(() => {
+            utxoSpinner.classList.add("d-none");
+            utxosInput.disabled = false;
+          });
+      };
+
+      const updateTotalUnspent = () => {
+        utxosValid = false;
+
+        let sum;
+        try {
+          const json = JSON.parse(utxosInput.value);
+          sum = json.reduce((sum, x) => sum + x.value, 0);
+        } catch (e) {
+          markInvalid(utxosInput);
+          throw e;
+        }
+
+        utxosTotalUnspent.innerText = (sum / 10 ** 8).toFixed(8);
+        inputsTotal.innerText = utxosTotalUnspent.innerText;
+        markValid(utxosInput);
+
+        utxosValid = true;
+
+        updateSkeletonTx();
+      };
+
+      const updateWitnessScript = () => {
+        validateWitnessScript(witnessScriptInput, collateralAddressInput.value);
+      };
+
+      const validateOutputs = () => {
+        outputsValid = false;
+
+        let isAllValid = true;
+        isAllValid =
+          validateAddressInput(outputAddress1Input, networkInput.value) &&
+          isAllValid;
+        isAllValid =
+          validateAddressInput(outputAddress2Input, networkInput.value) &&
+          isAllValid;
+
+        const value1 = validateNumericInput(outputValue1Input);
+        const value2 = validateNumericInput(outputValue2Input);
+
+        if (value1 === false || value2 === false) {
+          isAllValid = false;
+        } else if (value1 <= 0 || value2 <= 0) {
+          markInvalid(outputValue1Input);
+          markInvalid(outputValue2Input);
+          isAllValid = false;
+        }
+
+        if (!isAllValid) {
+          return;
+        }
+
+        outputsValid = true;
+
+        updateSkeletonTx();
+      };
+
+      let updateSkeletonTx = () => {
+        if (!utxosValid || !outputsValid || utxosInput.value == []) {
+          return;
+        }
+
+        const goesToOutputsBTC =
+          (parseInt(outputValue1Input.value) +
+            parseInt(outputValue2Input.value)) /
+          10 ** 8;
+        goesToOutputsSpan.innerText = goesToOutputsBTC.toFixed(8);
+
+        const networkFeeBTC =
+          parseFloat(utxosTotalUnspent.innerText) - goesToOutputsBTC;
+        networkFeeSpan.innerText = networkFeeBTC.toFixed(8);
+
+        const tx = buildSkeletonTx({
+          collateralAddress: collateralAddressInput.value,
+          utxos: JSON.parse(utxosInput.value),
+          witnessScript: witnessScriptInput.value,
+          outputs: [
+            {
+              address: outputAddress1Input.value,
+              value: parseInt(outputValue1Input.value),
+            },
+            {
+              address: outputAddress2Input.value,
+              value: parseInt(outputValue2Input.value),
+            },
+          ],
+        });
+
+        skeletonTxInput.value = tx;
+
+        updatePsbt();
+      };
+
+      /* Build the PSBT (with one signature) to be shared with the counterparty */
+      let updatePsbt = () => {
+        let tx;
+        try {
+          if (utxosInput.value == "[]" || utxosInput.value == "") {
+            return;
+          }
+
+          tx = buildPsbt({
+            psbtHex: skeletonTxInput.value,
+            key: privateKeyInput.value,
+          });
+        } catch (e) {
+          markInvalid(psbtInput);
+          psbtInput.value = "";
+          throw e;
+        }
+
+        psbtInput.value = tx;
+        markValid(psbtInput);
+      };
+
+      /* Build the final signed PSBT */
+      let updateSignedPsbt = () => {
+        try {
+          if (counterpartyPsbtInput.value == "") {
+            return;
+          }
+
+          const signedPsbt = buildPsbt({
+            psbtHex: counterpartyPsbtInput.value,
+            key: privateKeyInput.value,
+          });
+
+          signedPsbtInput.value = signedPsbt;
+          markValid(counterpartyPsbtInput);
+          markValid(signedPsbtInput);
+
+          updateSignedTx();
+        } catch (e) {
+          console.error("Failed to build signed PSBT:", e.message);
+
+          markInvalid(signedPsbtInput);
+          signedPsbtInput.value = "";
+          signedTxInput.value = "";
+        }
+      };
+
+      /* Build the final signed transaction */
+      let updateSignedTx = () => {
+        try {
+          const signedTx = buildTx({
+            psbtHex: signedPsbtInput.value,
+            network: networkInput.value,
+          });
+          signedTxInput.value = signedTx;
+          broadcastButton.disabled = false;
+
+          markValid(signedTxInput);
+        } catch (e) {
+          markInvalid(signedTxInput);
+          signedTxInput.value = "";
+          broadcastButton.disabled = true;
+          console.error("Failed to build signed TX:", e.message);
+          return;
+        }
+      };
+
+      const updateNsec = () => {
+        deriveNsec(decryptedSeedInput.value, nsecDerivationPathInput.value)
+          .then((nsec) => {
+            nsecInput.value = nsec;
+            markValid(nsecDerivationPathInput);
+          })
+          .catch((e) => {
+            console.error("Failed to derive Nsec:", e.message);
+
+            if (e.message.match(/Expected BIP32Path/)) {
+              markInvalid(nsecDerivationPathInput);
+              return;
+            }
+          });
+      };
+
+      broadcastButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        broadcastSpinner.classList.remove("d-none");
+        broadcastButton.disabled = true;
+
+        broadcast(signedTxInput.value, networkInput.value)
+          .then((data) => {
+            console.log(data);
+            const link = txLink(data, networkInput.value);
+            const a =
+              broadcastButton.parentElement.getElementsByTagName("a")[0];
+            a.innerText = data;
+            a.href = link;
+            markValid(broadcastButton);
+          })
+          .catch((error) => {
+            markInvalid(broadcastButton);
+            throw error;
+          })
+          .finally(() => {
+            broadcastSpinner.classList.add("d-none");
+            broadcastButton.disabled = false;
+          });
+      });
+
+      showPasswordCheckbox.addEventListener("input", () => {
+        passwordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+      });
+
+      contractSecretInput.addEventListener("input", () => {
+        useContractSecretCheckbox.disabled = contractSecretInput.value == "";
+        updatePrivateKey();
+      });
+
+      useContractSecretCheckbox.addEventListener("input", () => {
+        useContractSecret = useContractSecretCheckbox.checked;
+        updatePrivateKey();
+      });
+
+      const triggerInputs = () => {
+        for (const input of document.querySelectorAll("input, textarea")) {
+          if (input.value !== "") {
+            input.dispatchEvent(new Event("input"));
+          }
+        }
+        showPasswordCheckbox.dispatchEvent(new Event("input"));
+      };
+
+      networkInput.addEventListener("input", triggerInputs);
+
+      encryptedSeedInput.addEventListener("input", updateDecryptedSeed);
+      passwordInput.addEventListener("input", updateDecryptedSeed);
+
+      decryptedSeedInput.addEventListener("input", updatePrivateKey);
+      derivationPathInput.addEventListener("input", updatePrivateKey);
+
+      collateralAddressInput.addEventListener(
+        "input",
+        debounce(updateUTXOs, 250),
+      );
+      collateralAddressInput.addEventListener("input", updateWitnessScript);
+      utxosInput.addEventListener("input", updateTotalUnspent);
+      witnessScriptInput.addEventListener("input", updateWitnessScript);
+
+      outputAddress1Input.addEventListener("input", validateOutputs);
+      outputValue1Input.addEventListener("input", validateOutputs);
+      outputAddress2Input.addEventListener("input", validateOutputs);
+      outputValue2Input.addEventListener("input", validateOutputs);
+
+      privateKeyInput.addEventListener("input", updatePsbt);
+
+      privateKeyInput.addEventListener("input", updateSignedPsbt);
+      counterpartyPsbtInput.addEventListener("input", updateSignedPsbt);
+
+      nsecDerivationPathInput.addEventListener("input", updateNsec);
+
+      document.addEventListener("DOMContentLoaded", triggerInputs);
+    </script>
+  </body>
+</html>
